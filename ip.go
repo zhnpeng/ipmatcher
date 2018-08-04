@@ -78,14 +78,14 @@ func (i *IPRange) Less(then btree.Item) bool {
 		if i.StartIPUint > 0 {
 			if i.StartIPUint < ip.StartIPUint {
 				return true
+			} else if i.StartIPUint == ip.StartIPUint {
+				return compare(i.EndIP, ip.EndIP) == -1
+			} else {
+				return false
 			}
 		} else if ip.StartIPUint > 0 {
 			return false
 		}
-		// replace only if both start ip and end ip are equals
-		// or store all item if their start ip are the same
-		// then sort by their end ip
-		return compare(i.EndIP, ip.EndIP) == -1
 	case IP:
 		return compare(i.EndIP, net.IP(ip)) == -1
 	}

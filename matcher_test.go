@@ -8,51 +8,53 @@ import (
 func TestIPRange(t *testing.T) {
 	matcher := NewIPMatcher()
 	item1, _ := StringToIPRange("86.100.32.0/24", "A")
-	item2, _ := StringToIPRange("86.100.32.0-86.100.32.100", "B")
-	matcher.Add(item2)
+	item2, _ := StringToIPRange("86.100.32.5-86.100.32.100", "B")
+	item3, _ := StringToIPRange("86.100.32.5-86.100.33.50", "C")
 	matcher.Add(item1)
-	matcher.AddRange(net.ParseIP("10.1.2.1"), net.ParseIP("10.16.3.100"), "C")
+	matcher.Add(item2)
+	matcher.Add(item3)
 	matcher.AddRange(net.ParseIP("10.1.2.1"), net.ParseIP("10.1.2.50"), "D")
-	matcher.AddRange(net.ParseIP("10.1.2.1"), net.ParseIP("10.1.2.50"), "E")
-	matcher.AddRange(net.ParseIP("10.1.2.1"), net.ParseIP("10.1.2.255"), "F")
+	matcher.AddRange(net.ParseIP("10.1.2.1"), net.ParseIP("10.16.3.100"), "E")
+	matcher.AddRange(net.ParseIP("10.1.2.1"), net.ParseIP("10.1.2.50"), "F")
+	matcher.AddRange(net.ParseIP("10.1.2.1"), net.ParseIP("10.1.2.255"), "G")
 
 	ip1 := "10.1.2.40"
 	got := matcher.Match(net.ParseIP(ip1))
 	if got == nil {
 		t.Errorf("%v should match but not", ip1)
 	} else {
-		if got.Data.(string) != "E" {
-			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "E")
+		if got.Data.(string) != "F" {
+			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "F")
 		}
 	}
 
 	ip2 := "10.1.2.100"
 	got = matcher.Match(net.ParseIP(ip2))
 	if got == nil {
-		t.Errorf("%v should match by not", ip2)
+		t.Errorf("%v should match but not", ip2)
 	} else {
-		if got.Data.(string) != "F" {
-			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "F")
+		if got.Data.(string) != "G" {
+			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "G")
 		}
 	}
 
 	ip3 := "86.100.32.255"
 	got = matcher.Match(net.ParseIP(ip3))
 	if got == nil {
-		t.Errorf("%v should match by not", ip3)
+		t.Errorf("%v should match but not", ip3)
 	} else {
-		if got.Data.(string) != "A" {
-			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "A")
+		if got.Data.(string) != "C" {
+			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "C")
 		}
 	}
 
 	ip4 := "86.100.32.1"
 	got = matcher.Match(net.ParseIP(ip4))
 	if got == nil {
-		t.Errorf("%v should match by not", ip4)
+		t.Errorf("%v should match but not", ip4)
 	} else {
-		if got.Data.(string) != "B" {
-			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "B")
+		if got.Data.(string) != "A" {
+			t.Errorf("got unexcepted data got %v, want %v", got.Data.(string), "A")
 		}
 	}
 }

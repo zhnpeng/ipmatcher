@@ -28,7 +28,13 @@ type PortRange struct {
 func (p *PortRange) Less(then btree.Item) bool {
 	switch np := then.(type) {
 	case *PortRange:
-		return p.StartPort < np.StartPort
+		if p.StartPort < np.StartPort {
+			return true
+		} else if p.StartPort == np.StartPort {
+			return p.EndPort < np.EndPort
+		} else {
+			return false
+		}
 	case Port:
 		return p.EndPort < np
 	}
